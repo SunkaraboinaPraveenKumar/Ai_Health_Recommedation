@@ -71,6 +71,10 @@
             <label for="symptoms" class="mb-3">
                 {% if request.path == '/predict' %}
                     Selected Symptoms
+                {% elif request.path == '/search' %}
+                <a href="/">
+                    <button type="button" class="btn btn-primary">Select Symptoms</button>
+                </a>
                 {% else %}
                     Select Symptoms
                 {% endif %}
