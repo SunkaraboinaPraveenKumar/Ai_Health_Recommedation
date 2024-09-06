@@ -93,27 +93,48 @@ def helper(predicted_disease):
 
 
 # creating routes
+
 @app.route('/')
 def index():
     symptoms_list = list(symptoms_dict.keys())
     return render_template("index.html", symptoms=symptoms_list)
 
 
+@app.route('/search', methods=['POST','GET'])
+def search_disease():
+    if request.method == 'POST':
+        predicted_disease = request.form.get('disease')
+        desc, my_pre, med, die, wrkout = helper(predicted_disease)
+
+        # Process the prescription data
+        pre = [i for i in my_pre[0]]
+
+        # Clean and process 'med' and 'die' lists
+        med = med[0].replace("'", "").strip("[]").split(", ")  # Remove single quotes and convert to list
+        die = die[0].replace("'", "").strip("[]").split(", ")  # Remove single quotes and convert to list
+
+
+        return render_template('index.html', predicted_disease=predicted_disease, dis_desc=desc, des_pre=pre,
+                               wrkout=wrkout, des_med=med, desc_diet=die)
+
+
 @app.route('/predict', methods=['POST', 'GET'])
 def predict():
     if request.method == 'POST':
-        symptoms = request.form.get('symptoms')
-        user_symptoms = [s.strip() for s in symptoms.split(',')]
-        user_symptoms = [sym.strip("[]' ") for sym in user_symptoms]
-        predicted_disease = get_predicted_value(user_symptoms)
+        symptoms = request.form.getlist('symptoms')
+        predicted_disease = get_predicted_value(symptoms)
         desc, my_pre, med, die, wrkout = helper(predicted_disease)
 
-        pre = []
-        for i in my_pre[0]:
-            pre.append(i)
+        # Process the prescription data
+        pre = [i for i in my_pre[0]]
 
-        return render_template('index.html', predicted_disease=predicted_disease, dis_desc=desc, des_pre=pre, wrkout=wrkout, des_med=med, desc_diet=die)
+        # Clean and process 'med' and 'die' lists
+        med = med[0].replace("'", "").strip("[]").split(", ")  # Remove single quotes and convert to list
+        die = die[0].replace("'", "").strip("[]").split(", ")  # Remove single quotes and convert to list
 
+
+        return render_template('index.html', predicted_disease=predicted_disease, dis_desc=desc, des_pre=pre,
+                               wrkout=wrkout, des_med=med, desc_diet=die, symptoms=symptoms)
 
 @app.route('/about')
 def about():

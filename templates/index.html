@@ -28,9 +28,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
       <div class="logo">
-            <img class="myimg" src="{{url_for('static',filename='img.png')}}" alt="logo">
+            <a href="/">
+                <img class="myimg" src="{{url_for('static',filename='img.png')}}" alt="logo">
+            </a>
       </div>
-    <a class="navbar-brand" href="#">Health Care Center</a>
+<!--    <a class="navbar-brand" href="#">Health Care Center</a>-->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -52,37 +54,76 @@
           <a class="nav-link active" aria-current="page" href="/blog">Blog</a>
         </li>
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
+      <form action="/search" method="POST">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for a disease..." name="disease">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+        </form>
+
     </div>
   </div>
 </nav>
     <h1 class="text-center">Health Care Center</h1>
     <div class="container mt-4 my-4" style="background:black;color:white;border-radius:15px;padding:50px">
-        <form action="/predict" method="post">
-            <div class="form-group">
-                <label for="symptoms" class="mb-3">Type Symptoms</label>
-                <input type="text" class="form-control" name="symptoms" id="symptoms" placeholder="Symptoms like itching, coughing, vomiting...">
+    <form action="/predict" method="post">
+        <div class="form-group">
+            <label for="symptoms" class="mb-3">
+                {% if request.path == '/predict' %}
+                    Selected Symptoms
+                {% else %}
+                    Select Symptoms
+                {% endif %}
+            </label>
+
+            <div class="row">
+                {% for symptom in symptoms %}
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{ symptom }}" name="symptoms">
+                            <label class="form-check-label" for="{{ symptom }}">{{ symptom }}</label>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            <br>
-            <button class="btn btn-danger"  style="width:100%;padding:14px;margin-bottom:5px;font-weight:bold;">Recommendations</button>
-        </form>
-    </div>
+        </div>
+        <br>
+        <button class="btn btn-danger" style="width:100%;padding:14px;margin-bottom:5px;font-weight:bold;">Recommendations</button>
+    </form>
+</div>
+
 
     {% if predicted_disease %}
     <h1 class="text-center mt-4 my-4">Our AI Doc Results</h1>
     <div class="container">
-        <div class="result-container ml-3">
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal" style="padding:4px;  margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F39334;color:black;">Disease</button>
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#descriptionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#268AF3 ;color:black;">Description</button>
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F371F9 ;color:black;">Precaution</button>
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#medicationsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px;border-radius:5px; background:#F8576F ;color:black;">Medications</button>
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#workoutsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#99F741 ;color:black;">Workouts</button>
-        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#E5E23D;color:black;">Diets</button>
+    <div class="result-container d-flex flex-wrap flex-column flex-sm-row justify-content-center align-items-center">
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#F39334;color:black;">
+            Disease
+        </button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#descriptionModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#268AF3;color:black;">
+            Description
+        </button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#F371F9;color:black;">
+            Precaution
+        </button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#medicationsModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#F8576F;color:black;">
+            Medications
+        </button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#workoutsModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#99F741;color:black;">
+            Workouts
+        </button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal"
+            style="padding:4px; margin: 5px 20px; font-size:20px; font-weight:bold; width:140px; border-radius:5px; background:#E5E23D;color:black;">
+            Diets
+        </button>
     </div>
-    </div>
+</div>
+
     {% endif %}
 
 <!-- Disease Model   -->
